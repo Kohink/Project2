@@ -2,9 +2,9 @@
 
 int main()
 {
-    syscall();
-    syscall();
-    syscall();
-    syscall();
+    fork();
+    fork();
+    fork();
+    fork();
     return 0;
 }
