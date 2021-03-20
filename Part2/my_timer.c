@@ -1,13 +1,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <asm/semaphore.h>
-#include <linux/list.h>
 #include <linux/string.h>
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
-
-/*
+#include <time.h>
 
 MODULE_LICENSE("Dual BSD/GPL");
 #define BUF_LEN 100//max length of read/write message
@@ -25,15 +22,29 @@ static structfile_operationsprocfile_fops=
 // read
 static ssize_tprocfile_read(structfile* file, char * ubuf, size_tcount, loff_t*ppos)
 {
+    int current_time = current_kernal_time();
+    int elapsed_time = 0;
+    int counter = 0;
+
     printk(KERN_INFO "proc_read\n");
     procfs_buf_len= strlen(msg);
     if (*ppos> 0 || count < procfs_buf_len) //check if data already read and if space in user buffer
         return 0;
+    
+    printf("current time: %d", current_time);
+    if(counter > 0)
+    {
+        printf("elapsed time: %d", elapsed_time);
+        elapsed_time += elasped_time;
+    }
+    counter++;
+
     if (copy_to_user(ubuf, msg, procfs_buf_len)) //send data to user buffer
         return -EFAULT;
     *ppos= procfs_buf_len;//update position
     printk(KERN_INFO "gave to user %s\n", msg);
-return procfs_buf_len; //return number of characters read
+
+    return procfs_buf_len; //return number of characters read
 
 // write
 static ssize_tprocfile_write(structfile* file, constchar * ubuf, size_tcount, loff_t* ppos)
@@ -46,6 +57,7 @@ static ssize_tprocfile_write(structfile* file, constchar * ubuf, size_tcount, lo
     copy_from_user(msg, ubuf, procfs_buf_len);
     printk(KERN_INFO "got from user: %s\n", msg);
     return procfs_buf_len;
+}
 
 // init
 static inthello_init(void)
@@ -61,5 +73,3 @@ static void hello_exit(void)
     proc_remove(proc_entry);
     return;
 }
-
-*/

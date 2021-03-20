@@ -1,5 +1,5 @@
 obj-m += my_timer.o
 all:
-	make -C /lib/modules/3.10.0-1160.6.1.el7.x86_64/build M=/usr/src/my_timer modules
+	make -C /lib/modules/$(shell uname -r)/build M=/usr/src/my_timer modules
 clean:
-	make -C /lib/modules/3.10.0-1160.6.1.el7.x86_64/build M=/usr/src/my_timer clean
+	make -C /lib/modules/$(shell uname -r)/build M=/usr/src/my_timer clean
