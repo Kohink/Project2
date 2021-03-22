@@ -6,21 +6,14 @@
 
 ⚫ Gary Bowen - gjb17
 
-<div id="bigtext">
-    <span>BIGTEXT</span>
-    <span>Makes Text Big</span>
-</div>
-<script>
-$('#Part 1: System Call').bigtext();
-</script>
 Part 1: System Call 
 
-  Files: empty.c, empty.trace, part1.c, part1.trace
+Files: empty.c, empty.trace, part1.c, part1.trace
 
 Part 2: Kernel Module
 
-  Files: my_timer.c, Makefile
+Files: my_timer.c, Makefile
 
 Part 3: Elevator Scheduler 
 
-  Files: elevator.c, sys_call.c, Makefile
+Files: elevator.c, sys_call.c, Makefile
