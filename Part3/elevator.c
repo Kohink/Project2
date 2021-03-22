@@ -70,7 +70,12 @@ struct thread_param thread;
 int thread_run(void *data) {
 	struct thread_parameter *parm = data;
 
-	while (!kthread_should_stop()) {
+	while (!kthread_should_stop()) 
+    {
+        if(active_elevator == 1)
+        {
+            
+        }
 		ssleep(1);
 		parm->cnt++;
 	}
@@ -80,11 +85,10 @@ int thread_run(void *data) {
 
 //thread function
 void thread_init_parameter(struct thread_parameter *parm) {
-	static int id = 1;
 
-	parm->id = id++;
-	parm->cnt = 0;
-	parm->kthread = kthread_run(thread_run, parm, "thread example %d", parm->id);
+    printk(KERN_NOTICE "Initializing Thread\n");
+	mutex_init(&parm->mutex);
+	parm->kthread = kthread_run(thread_run, parm, "thread example %d";
 }
 
 /////////////////////////////////////////
@@ -255,6 +259,11 @@ static int elevator_init(void)
 	fops.open = elevator_proc_open;
 	fops.read = elevator_proc_read;
 	fops.release = elevator_proc_release;
+
+    STUB_start_elevator = start_elevator;
+    STUB_issue_request = issue_request;
+    STUB_stop_elevator = stop_elevator;
+
 	
 	if (!proc_create(ENTRY_NAME, PERMS, NULL, &fops)) {
 		printk(KERN_WARNING "elevator_init\n");
