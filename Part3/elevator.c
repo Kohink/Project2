@@ -128,18 +128,29 @@ int start_elevator(void)
 		printk(KERN_WARNING "start_elevator");
 		return -ENOMEM;
 	}
+    if(active_elevator == 1 || done_elevator == 1 || inactive_elevator == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        elevator.current_floor_state = "IDLE";
+        elevator.curr_floor = 1;
+        elevator.current_elevator_total = 0;
+        elevator.serviced_passengers = 0;
+        elevator.waiting_passengers = 0;
+    }
 
-	elevator.current_floor_state = "IDLE";
-	elevator.curr_floor = 1;
-	elevator.current_elevator_total = 0;
-
+    return 0;
 
 }
 
 int stop_elevator(void)
 {
 	if(active_elevator == 0 || inactive_elevator != 0 || done_elevator != 0)
+    {
 		return 1;
+    }
     done_elevator = 0;
 	return 0;
 }
