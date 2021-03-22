@@ -118,24 +118,35 @@ int elevator_proc_release(struct inode *sp_inode, struct file *sp_file) {
 	return 0;
 }
 
-/////////////////////////////////////////
-//SYSCALL FUNCTIONS//
 
 int start_elevator(void)
 {
+
+	char *buf = kmalloc(sizeof(char) * 100, __GFP_RECLAIM);
+	if (buf == NULL) 
+	{
+		printk(KERN_WARNING "start_elevator");
+		return -ENOMEM;
+	}
+
+	elevator.current_floor_state = "IDLE";
+	elevator.curr_floor = 1;
+	elevator.current_elevator_total = 0;
+
 
 }
 
 int stop_elevator(void)
 {
 	if(active_elevator == 0 || inactive_elevator != 0 || done_elevator != 0)
-		return -1;
+		return 1;
     done_elevator = 0;
 	return 0;
 }
 
 int issue_request(int start_floor, int destination_floor, int type)
 {
+
 
 }
 
@@ -251,7 +262,7 @@ static int elevator_init(void)
 		remove_proc_entry(ENTRY_NAME, NULL);
 		return PTR_ERR(thread1.kthread);
 	}
-	
+
 	elevator.current_floor_state = "OFFLINE";
 	
 	return 0;
