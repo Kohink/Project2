@@ -42,21 +42,3 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-// From sys_call_module.c
-extern long (*STUB_test_call)(int);
-long my_test_call(int test) {
-	printk(KERN_NOTICE "%s: Your int is %d\n", __FUNCTION__, test);
-	return test;
-}
-
-static int sys_call_init(void) {
-	STUB_test_call = my_test_call;
-	return 0;
-}
-module_init(sys_call_init);
-
-static void sys_call_exit(void) {
-	STUB_test_call = NULL;
-}
-module_exit(sys_call_exit);
-
