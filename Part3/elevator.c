@@ -32,7 +32,7 @@ int done_elevator = 0;
 //holds information about current floor and amount of passengers waiting.
 struct{
     int curr_floor;
-    char current_floor_state[10];
+    char *current_floor_state[10];
     int current_elevator_total;
     int elevator;
     int waiting_passengers;
@@ -126,17 +126,17 @@ int start_elevator(void)
 
 }
 
-int issue_request(int start_floor, int destination_floor, int type)
-{
-
-}
-
 int stop_elevator(void)
 {
 	if(active_elevator == 0 || inactive_elevator != 0 || done_elevator != 0)
 		return -1;
     done_elevator = 0;
 	return 0;
+}
+
+int issue_request(int start_floor, int destination_floor, int type)
+{
+
 }
 
 //need to fix print a lot
@@ -252,6 +252,7 @@ static int elevator_init(void)
 		return PTR_ERR(thread1.kthread);
 	}
 	
+	elevator.current_floor_state = "OFFLINE";
 	
 	return 0;
 }
