@@ -34,7 +34,7 @@ static ssize_t procfile_read(struct file* file, char * ubuf, size_t count, loff_
 
     if (hasPrevious == true)
     {
-	long int checkForNegNano = nano - oldNano;
+	    long int checkForNegNano = nano - oldNano;
 	
 	if (checkForNegNano < 0)
     	{
