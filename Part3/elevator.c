@@ -162,7 +162,35 @@ int stop_elevator(void)
 
 int issue_request(int start_floor, int destination_floor, int type)
 {
+    Passenger *pass;
+    pass = kmalloc()(sizeof(Passenger), __GFP_RECLAIM);
 
+    if (elevator_is_deactivating == 1 || elevator_stopped == 1 || elevator_is_active == 0)
+    {
+		return 1;
+    }
+
+	if (type != 0 || type!= 1 || type != 2 || start_floor == destination_floor || start_floor > 10 || start_floor < 1 || destination_floor > 10 || destination_floor < 1)
+    {
+		return 1;
+    }
+
+    if(pass == NULL)
+    {
+        return -ENOMEM;
+    }
+
+        pass->floor_boarded = start_floor;
+        pass->floor_departing = destination_floor;
+        pass->item_carrying = type;
+
+        elevator.waiting_passengers +=1;
+
+        list_add_tail(&pass->list, &elev[start_floor-1].list);
+        
+        elev[start_floor-1].data++;
+
+        return 0;
 
 }
 
@@ -296,7 +324,7 @@ static void elevator_exit(void)
     STUB_start_elevator = NULL;
 	STUB_issue_request = NULL;
 	STUB_stop_elevator = NULL;
-    delete_list();
+    delete_elevator();
 	remove_proc_entry(ENTRY_NAME, NULL);
     mutex_destroy(&thread.mutex);
 }
