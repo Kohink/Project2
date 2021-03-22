@@ -133,7 +133,10 @@ int issue_request(int start_floor, int destination_floor, int type)
 
 int stop_elevator(void)
 {
-    
+	if(active_elevator == 0 || inactive_elevator != 0 || done_elevator != 0)
+		return -1;
+    done_elevator = 0;
+	return 0;
 }
 
 //need to fix print a lot
@@ -237,10 +240,18 @@ static int elevator_init(void)
 		return -ENOMEM;
 	}
 
-	elevators.total_cnt = 0;
-	elevators.total_length = 0;
-	elevators.total_weight = 0;
+	//elevators.total_cnt = 0;
+	//elevators.total_length = 0;
+	//6elevators.total_weight = 0;
 	INIT_LIST_HEAD(&elevators.list);
+
+	thread_init_parameter(&thread1);
+	if (IS_ERR(thread1.kthread)) {
+		printk(KERN_WARNING "error spawning thread");
+		remove_proc_entry(ENTRY_NAME, NULL);
+		return PTR_ERR(thread1.kthread);
+	}
+	
 	
 	return 0;
 }
