@@ -1,5 +1,5 @@
-obj-y :=test_call.o
-obj-m :=syscallModule.o
+obj-y :=elevator.o
+obj-m :=sys_call.o
 
 PWD := $(shell pwd)
 KDIR := /lib/modules/$(shell uname-r)/build
