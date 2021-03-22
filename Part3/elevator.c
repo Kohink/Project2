@@ -120,6 +120,21 @@ int elevator_proc_release(struct inode *sp_inode, struct file *sp_file) {
 
 /////////////////////////////////////////
 
+int start_elevator(void)
+{
+
+}
+
+int issue_request(int start_floor, int destination_floor, int type)
+{
+
+}
+
+int stop_elevator(void)
+{
+    
+}
+
 //need to fix print a lot
 int print_elevator(void) {
 	int i;
