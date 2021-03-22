@@ -67,18 +67,25 @@ struct thread_param thread;
 ///////////////////////////////////////// End of Struct Initialization /////////////////////////////////////////
 
 //thread function
-int thread_run(void *data) 
+int thread_run(void *elev_info) 
 {
-	struct thread_parameter *parm = data;
+	struct thread_parameter *param = elev_info;
 
 	while (!kthread_should_stop()) 
     {
         if(active_elevator == 1)
         {
-
+            int i = 0;
+            for(i = 0; i<11; i++)
+            {
+                if(mutex_lock_interruptible(&param->mutex) == 0)
+                {
+                    strcpy(elevator.state,"UP");
+                }
+                mutex_unlock(&param->mutex);
+            }
         }
 		ssleep(1);
-		//parm->cnt++;
 	}
 
 	return 0;
@@ -170,6 +177,7 @@ int issue_request(int start_floor, int destination_floor, int type)
 		return 1;
     }
 
+    //If the passenger is not grapes, a wolf, or a sheep its invalid. If the start floor isn't 1 and the destination floor is greater that 1 or less than one, its invalid.
 	if (type != 0 || type!= 1 || type != 2 || start_floor == destination_floor || start_floor > 10 || start_floor < 1 || destination_floor > 10 || destination_floor < 1)
     {
 		return 1;
@@ -180,16 +188,15 @@ int issue_request(int start_floor, int destination_floor, int type)
         return -ENOMEM;
     }
 
+        //Sets up information for the passenger getting ready to board the elevator
         pass->floor_boarded = start_floor;
         pass->floor_departing = destination_floor;
         pass->item_carrying = type;
-
-        elevator.waiting_passengers +=1;
-
+        //increases the # of passengers waiting for the elevator once a new passengers information is added.
+        elevator.waiting_passengers ++;
+        //adds to the last position of the list to preserve FIFO
         list_add_tail(&pass->list, &elev[start_floor-1].list);
-        
         elev[start_floor-1].data++;
-
         return 0;
 
 }
