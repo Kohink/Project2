@@ -67,17 +67,18 @@ struct thread_param thread;
 ///////////////////////////////////////// End of Struct Initialization /////////////////////////////////////////
 
 //thread function
-int thread_run(void *data) {
+int thread_run(void *data) 
+{
 	struct thread_parameter *parm = data;
 
 	while (!kthread_should_stop()) 
     {
         if(active_elevator == 1)
         {
-            
+
         }
 		ssleep(1);
-		parm->cnt++;
+		//parm->cnt++;
 	}
 
 	return 0;
@@ -292,7 +293,11 @@ module_init(elevator_init);
 //need to fix this one below too
 static void elevator_exit(void) 
 {
+    STUB_start_elevator = NULL;
+	STUB_issue_request = NULL;
+	STUB_stop_elevator = NULL;
+    delete_list();
 	remove_proc_entry(ENTRY_NAME, NULL);
-    delete_elevator();
+    mutex_destroy(&thread.mutex);
 }
 module_exit(elevator_exit);
