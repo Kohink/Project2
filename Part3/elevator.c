@@ -119,6 +119,7 @@ int elevator_proc_release(struct inode *sp_inode, struct file *sp_file) {
 }
 
 /////////////////////////////////////////
+//SYSCALL FUNCTIONS//
 
 int start_elevator(void)
 {
