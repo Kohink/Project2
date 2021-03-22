@@ -64,7 +64,32 @@ struct thread_param{
 }
 struct thread_param thread;
 
-//proc: open, read, release
+///////////////////////////////////////// End of Struct Initialization /////////////////////////////////////////
+
+//thread function
+int thread_run(void *data) {
+	struct thread_parameter *parm = data;
+
+	while (!kthread_should_stop()) {
+		ssleep(1);
+		parm->cnt++;
+	}
+
+	return 0;
+}
+
+//thread function
+void thread_init_parameter(struct thread_parameter *parm) {
+	static int id = 1;
+
+	parm->id = id++;
+	parm->cnt = 0;
+	parm->kthread = kthread_run(thread_run, parm, "thread example %d", parm->id);
+}
+
+/////////////////////////////////////////
+
+//proc: open, read, release - done
 int elevator_proc_open(struct inode *sp_inode, struct file *sp_file) {
 	read_p = 1;
 	message = kmalloc(sizeof(char) * ENTRY_SIZE, __GFP_RECLAIM | __GFP_IO | __GFP_FS);
@@ -92,6 +117,55 @@ int elevator_proc_release(struct inode *sp_inode, struct file *sp_file) {
 	kfree(message);
 	return 0;
 }
+
+/////////////////////////////////////////
+
+//need to fix print a lot
+int print_elevator(void) {
+	int i;
+	Animal *a;
+	struct list_head *temp;
+
+	char *buf = kmalloc(sizeof(char) * 100, __GFP_RECLAIM);
+	if (buf == NULL) {
+		printk(KERN_WARNING "print_elevator");
+		return -ENOMEM;
+	}
+
+	/* init message buffer */
+	strcpy(message, "");
+
+	/* headers, print to temporary then append to message buffer */
+	sprintf(buf, "Elevator state: %d\n", elevator.total_cnt);       strcat(message, buf);
+    sprintf(buf, "Elevator status: %d\n", elevator.total_cnt);       strcat(message, buf);
+	sprintf(buf, "Current floor: %d\n", elevator.total_length);   strcat(message, buf);
+	sprintf(buf, "Number of passengers: %d\n", elevator.total_weight);   strcat(message, buf);
+    sprintf(buf, "Number of passengers waiting: %d\n", elevator.total_weight);   strcat(message, buf);
+	sprintf(buf, "Number of passengers serviced: %d\n", elevator.total_weight);   strcat(message, buf);
+
+	/* print entries */
+	i = 0;
+	//list_for_each_prev(temp, &elevator.list) { /* backwards */
+	list_for_each(temp, &elevator.list) { /* forwards*/
+		a = list_entry(temp, Animal, list);
+
+		/* newline after every 5 entries */
+		if (i % 5 == 0 && i > 0)
+			strcat(message, "\n");
+
+		sprintf(buf, "%s ", a->name);
+		strcat(message, buf);
+
+		i++;
+	}
+
+	/* trailing newline to separate file from commands */
+	strcat(message, "\n");
+
+	kfree(buf);
+	return 0;
+}
+
 
 //need to fix this one too
 void delete_elevator(int type) 
@@ -160,5 +234,6 @@ module_init(elevator_init);
 static void elevator_exit(void) 
 {
 	remove_proc_entry(ENTRY_NAME, NULL);
+    delete_elevator();
 }
 module_exit(elevator_exit);
