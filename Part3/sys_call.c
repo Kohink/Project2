@@ -24,7 +24,7 @@ SYSCALL_DEFINE1(start_elevator, void, elevator) {
 }
 
 SYSCALL_DEFINE1(issue_request, int, int, int, elevator) {
-    printk(KERN_NOTICE "Inside SYSCALL_DEFINE1 block. %s: Your int is %d\n", __FUNCTION__, test_int);
+    printk(KERN_NOTICE "Inside SYSCALL_DEFINE1 block. %s: Your int is %d\n", __FUNCTION__, elevator);
     if (STUB_issue_request != NULL)
         return STUB_issue_request(elevator);
     else
