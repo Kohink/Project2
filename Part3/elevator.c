@@ -56,7 +56,7 @@ typedef struct passenger{
 struct floor{
     int data;
     struct list_head list;
-}
+};
 struct floor elev[10]; //elevator floors;
 
 
@@ -64,11 +64,11 @@ struct floor elev[10]; //elevator floors;
 struct thread_param{
     struct task_struct *kthread;
     struct mutex mutex;
-}
+};
 struct thread_param thread;
 
 ///////////////////////////////////////// End of Struct Initialization /////////////////////////////////////////
-
+/*
 //thread function
 int thread_run(void *elev_info) 
 {
@@ -101,7 +101,7 @@ void thread_init_parameter(struct thread_parameter *parm) {
 	mutex_init(&parm->mutex);
 	parm->kthread = kthread_run(thread_run, parm, "thread example %d";
 }
-
+*/
 /////////////////////////////////////////
 
 //proc: open, read, release - done
@@ -113,7 +113,7 @@ int elevator_proc_open(struct inode *sp_inode, struct file *sp_file) {
 		return -ENOMEM;
 	}
 	
-	add_elevator(get_random_int() % NUM_elevator_TYPES);
+	//add_elevator(get_random_int() % NUM_elevator_TYPES);
 	return print_elevators();
 }
 
@@ -149,7 +149,7 @@ int start_elevator(void)
     }
     else
     {
-        elevator.current_floor_state = "IDLE";
+        strcpy(elevator.current_floor_state, "IDLE");
         elevator.curr_floor = 1;
         elevator.current_elevator_total = 0;
         elevator.serviced_passengers = 0;
@@ -173,7 +173,7 @@ int stop_elevator(void)
 int issue_request(int start_floor, int destination_floor, int type)
 {
     Passenger *pass;
-    pass = kmalloc()(sizeof(Passenger), __GFP_RECLAIM);
+    pass = kmalloc(sizeof(Passenger), __GFP_RECLAIM);
 
     if (elevator_is_deactivating == 1 || elevator_stopped == 1 || elevator_is_active == 0)
     {
