@@ -14,7 +14,7 @@ Part 2: Kernel Module
 
     Files: my_timer.c, Makefile
 
-    Makefile contains command lines such as 'cat /proc/timer' and various 'sleep' commands for testing agains example output in the project 2 description. These lines can be removed if needed for grading purposes.
+    Makefile contains command lines such as .sudo insmod my_timer.ko', 'cat /proc/timer', and various 'sleep' commands for testing agains example output in the project 2 description. These lines can be removed if needed for grading purposes.
 
 Part 3: Elevator Scheduler 
 
