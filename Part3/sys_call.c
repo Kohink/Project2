@@ -1,44 +1,40 @@
-#define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <elevator.c>
-#define START_ELEVATOR_ 335
-#define ISSUE_REQUEST_ 336 
-#define STOP_ELEVATOR_ 337
+#include <linux/linkage.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/syscalls.h>
 
-int start_call(int ele1) {
-	return syscall(START_ELEVATOR_, ele1);
+// System call stub
+long (*STUB_start_elevator)(void) = NULL;
+EXPORT_SYMBOL(STUB_start_elevator);
+
+long (*STUB_issue_request)(int, int, int) = NULL;
+EXPORT_SYMBOL(STUB_issue_request);
+
+long (*STUB_stop_elevator)(void) = NULL;
+EXPORT_SYMBOL(STUB_stop_elevator);
+
+
+// System call wrapper
+SYSCALL_DEFINE1(start_elevator, void, elevator) {
+    printk(KERN_NOTICE "Inside SYSCALL_DEFINE1 block. %s: ", __FUNCTION__);
+    if (STUB_start_elevator != NULL)
+        return STUB_start_elevator();
+    else
+        return -ENOSYS;
 }
 
-int issue_call(int req) {
-	return syscall(ISSUE_REQUEST_, req);
+SYSCALL_DEFINE1(issue_request, int, int, int, elevator) {
+    printk(KERN_NOTICE "Inside SYSCALL_DEFINE1 block. %s: Your int is %d\n", __FUNCTION__, test_int);
+    if (STUB_issue_request != NULL)
+        return STUB_issue_request(elevator);
+    else
+        return -ENOSYS;
 }
 
-int stop_call(int ele2) {
-	return syscall(STOP_ELEVATOR_, ele2);
+SYSCALL_DEFINE1(stop_elevator, void, elevator) {
+    printk(KERN_NOTICE "Inside SYSCALL_DEFINE1 block. %s: ", __FUNCTION__);
+    if (STUB_stop_elevator != NULL)
+        return STUB_stop_elevator();
+    else
+        return -ENOSYS;
 }
-
-int main(int argc, char **argv) 
-{
-	if (argc != 2) {
-		printf("wrong number of args\n");
-		return -1;
-	}
-	
-	int test = atoi(argv[1]);
-	long ret = start_call(test);
-
-	printf("sending this: %d\n", test);
-
-	if (ret < 0)
-		perror("system call error");
-	else
-		printf("Function successful. passed in: %d, returned %ld\n", test, ret);
-	
-	printf("Returned value: %ld\n", ret);	
-
-	return 0;
-}
-

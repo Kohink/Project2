@@ -18,9 +18,9 @@ MODULE_LICENSE("GPL");
 #define PERMS 0644
 #define PARENT NULL
 
-extern int (*STUB_start_elevator)(void);
-extern int (*STUB_issue_request)(int, int, int, int);
-extern int (*STUB_stop_elevator)(void);
+extern long (*STUB_start_elevator)(void);
+extern long (*STUB_issue_request)(int, int, int);
+extern long (*STUB_stop_elevator)(void);
 static struct file_operations fops;
 
 static char *message;
@@ -35,7 +35,7 @@ int done_elevator = 0;
 //holds information about current floor and amount of passengers waiting.
 struct{
     int curr_floor;
-    char *current_floor_state[10];
+    char current_floor_state[10];
     int current_elevator_total;
     int elevator;
     int waiting_passengers;
@@ -114,7 +114,8 @@ int elevator_proc_open(struct inode *sp_inode, struct file *sp_file) {
 	}
 	
 	//add_elevator(get_random_int() % NUM_elevator_TYPES);
-	return print_elevators();
+	// return print_elevators();
+	return 0;
 }
 
 ssize_t elevator_proc_read(struct file *sp_file, char __user *buf, size_t size, loff_t *offset) {
@@ -175,7 +176,7 @@ int issue_request(int start_floor, int destination_floor, int type)
     Passenger *pass;
     pass = kmalloc(sizeof(Passenger), __GFP_RECLAIM);
 
-    if (elevator_is_deactivating == 1 || elevator_stopped == 1 || elevator_is_active == 0)
+    if (done_elevator == 1 || inactive_elevator == 1 || active_elevator == 0)
     {
 		return 1;
     }
@@ -206,7 +207,7 @@ int issue_request(int start_floor, int destination_floor, int type)
 
 //need to fix print a lot
 int print_elevator(void) {
-	int i;
+	/*int i;
 	Animal *a;
 	struct list_head *temp;
 
@@ -216,10 +217,10 @@ int print_elevator(void) {
 		return -ENOMEM;
 	}
 
-	/* init message buffer */
+	// init message buffer
 	strcpy(message, "");
 
-	/* headers, print to temporary then append to message buffer */
+	// headers, print to temporary then append to message buffer
 	sprintf(buf, "Elevator state: %d\n", elevator.total_cnt);       strcat(message, buf);
     sprintf(buf, "Elevator status: %d\n", elevator.total_cnt);       strcat(message, buf);
 	sprintf(buf, "Current floor: %d\n", elevator.total_length);   strcat(message, buf);
@@ -227,13 +228,13 @@ int print_elevator(void) {
     sprintf(buf, "Number of passengers waiting: %d\n", elevator.total_weight);   strcat(message, buf);
 	sprintf(buf, "Number of passengers serviced: %d\n", elevator.total_weight);   strcat(message, buf);
 
-	/* print entries */
+	// print entries
 	i = 0;
-	//list_for_each_prev(temp, &elevator.list) { /* backwards */
-	list_for_each(temp, &elevator.list) { /* forwards*/
+	//list_for_each_prev(temp, &elevator.list) { // backwards
+	list_for_each(temp, &elevator.list) { // forwards
 		a = list_entry(temp, Animal, list);
 
-		/* newline after every 5 entries */
+		// newline after every 5 entries
 		if (i % 5 == 0 && i > 0)
 			strcat(message, "\n");
 
@@ -243,10 +244,10 @@ int print_elevator(void) {
 		i++;
 	}
 
-	/* trailing newline to separate file from commands */
+	// trailing newline to separate file from commands
 	strcat(message, "\n");
 
-	kfree(buf);
+	kfree(buf);*/
 	return 0;
 }
 
@@ -254,7 +255,7 @@ int print_elevator(void) {
 //need to fix this one too
 void delete_elevator(int type) 
 {
-	struct list_head move_list;
+	/*struct list_head move_list;
 	struct list_head *temp;
 	struct list_head *dummy;
 	int i;
@@ -262,34 +263,35 @@ void delete_elevator(int type)
 
 	INIT_LIST_HEAD(&move_list);
 
-	/* move items to a temporary list to illustrate movement */
-	//list_for_each_prev_safe(temp, dummy, &elevator.list) { /* backwards */
-	list_for_each_safe(temp, dummy, &elevator.list) { /* forwards */
+	// move items to a temporary list to illustrate movement
+	//list_for_each_prev_safe(temp, dummy, &elevator.list) { // backwards 
+	list_for_each_safe(temp, dummy, &elevator.list) { // forwards
 		a = list_entry(temp, Animal, list);
 
 		if (a->id == type) {
-			//list_move(temp, &move_list); /* move to front of list */
-			list_move_tail(temp, &move_list); /* move to back of list */
+			//list_move(temp, &move_list); // move to front of list
+			list_move_tail(temp, &move_list); // move to back of list
 		}
 
 	}	
 
-	/* print stats of list to syslog, entry version just as example (not needed here) */
+	// print stats of list to syslog, entry version just as example (not needed here)
 	i = 0;
-	//list_for_each_entry_reverse(a, &move_list, list) { /* backwards */
-	list_for_each_entry(a, &move_list, list) { /* forwards */
-		/* can access a directly e.g. a->id */
+	//list_for_each_entry_reverse(a, &move_list, list) { // backwards
+	list_for_each_entry(a, &move_list, list) { // forwards
+		// can access a directly e.g. a->id
 		i++;
 	}
 	printk(KERN_NOTICE "animal type %d had %d entries\n", type, i);
 
-	/* free up memory allocation of elevator */
-	//list_for_each_prev_safe(temp, dummy, &move_list) { /* backwards */
-	list_for_each_safe(temp, dummy, &move_list) { /* forwards */
+	// free up memory allocation of elevator
+	//list_for_each_prev_safe(temp, dummy, &move_list) { // backwards
+	list_for_each_safe(temp, dummy, &move_list) { // forwards
 		a = list_entry(temp, Animal, list);
-		list_del(temp);	/* removes entry from list */
+		list_del(temp);	// removes entry from list
 		kfree(a);
 	}
+	*/
 }
 
 //need to fix this one below
@@ -299,9 +301,9 @@ static int elevator_init(void)
 	fops.read = elevator_proc_read;
 	fops.release = elevator_proc_release;
 
-    STUB_start_elevator = start_elevator;
-    STUB_issue_request = issue_request;
-    STUB_stop_elevator = stop_elevator;
+    	//STUB_start_elevator = start_elevator;
+    	//STUB_issue_request = issue_request;
+    	//STUB_stop_elevator = stop_elevator;
 
 	
 	if (!proc_create(ENTRY_NAME, PERMS, NULL, &fops)) {
@@ -310,19 +312,19 @@ static int elevator_init(void)
 		return -ENOMEM;
 	}
 
-	//elevators.total_cnt = 0;
-	//elevators.total_length = 0;
-	//6elevators.total_weight = 0;
-	INIT_LIST_HEAD(&elevators.list);
+	//elevator.total_cnt = 0;
+	//elevator.total_length = 0;
+	//6elevator.total_weight = 0;
+	INIT_LIST_HEAD(&elevator.list);
 
-	thread_init_parameter(&thread1);
+	/*thread_init_parameter(&thread1);
 	if (IS_ERR(thread1.kthread)) {
 		printk(KERN_WARNING "error spawning thread");
 		remove_proc_entry(ENTRY_NAME, NULL);
 		return PTR_ERR(thread1.kthread);
-	}
+	}*/
 
-	elevator.current_floor_state = "OFFLINE";
+	strcpy(elevator.current_floor_state, "OFFLINE");
 	
 	return 0;
 }
@@ -334,7 +336,7 @@ static void elevator_exit(void)
     STUB_start_elevator = NULL;
 	STUB_issue_request = NULL;
 	STUB_stop_elevator = NULL;
-    delete_elevator();
+    //delete_elevator();
 	remove_proc_entry(ENTRY_NAME, NULL);
     mutex_destroy(&thread.mutex);
 }
