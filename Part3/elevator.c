@@ -200,9 +200,6 @@ int print_elevator(void) {
 	sprintf(buf, "Number of passengers serviced: %d\n", elevator.serviced_passengers);  strcat(message, buf);
 	strcat(message, buf);
 
-	// trailing newline to separate file from commands
-	strcat(message, "\n");
-
 	kfree(buf);
 	return 0;
 }
