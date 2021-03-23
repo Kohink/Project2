@@ -18,10 +18,13 @@ MODULE_LICENSE("GPL");
 #define PERMS 0644
 #define PARENT NULL
 
-//extern int (*STUB_start_elevator)(void);
-//extern int (*STUB_issue_request)(int, int, int, int);
-//extern int (*STUB_stop_elevator)(void);
+extern int (*STUB_start_elevator)(void);
+extern int (*STUB_issue_request)(int, int, int, int);
+extern int (*STUB_stop_elevator)(void);
 static struct file_operations fops;
+
+static char *message;
+static int read_p;
 
 //Elevator Structure and event tracking
 
